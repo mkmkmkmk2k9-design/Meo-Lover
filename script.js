@@ -11,7 +11,7 @@ const isMobile = window.innerWidth < 600;
 const messages = [
     { text: "ANH LỠ YÊU EM MẤT RỒI", time: 15000 }, 
     { text: "YÊU RẤT NHIỀU", time: 15000 },
-    { text: "DÙ CHO EM CÓ NÓI", time: =15000 },
+    { text: "DÙ CHO EM CÓ NÓI", time: 15000 },
     { text: "RẰNG TA SẼ KHÔNG THỂ BÊN NHAU", time: 15000 },
     { text: "THÌ", time: 15000 }, 
     { text: "ANH VẪN LUÔN YÊU EM", time: 15000 },
@@ -214,6 +214,7 @@ async function prepareFont() {
 }
 
 prepareFont();
+
 
 
 
