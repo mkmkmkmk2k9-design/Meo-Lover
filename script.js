@@ -7,16 +7,16 @@ let isRunning = false;
 const isMobile = window.innerWidth < 600;
 
 const messages = [
-    { text: "ANH LỠ YÊU EM MẤT RỒI", time: 10000 }, 
-    { text: "YÊU RẤT NHIỀU", time: 11000 },
-    { text: "DÙ CHO EM CÓ NÓI", time: 10000 },
-    { text: "RẰNG TA SẼ KHÔNG THỂ BÊN NHAU", time: 12000 },
-    { text: "THÌ", time: 10000 }, 
-    { text: "ANH VẪN LUÔN YÊU EM", time: 12000 },
-    { text: "SẼ LUÔN ", time: 9000 },
-    { text: "GỬI CHO EM NHỮNG LỜI CHÚC TỐT ĐẸP NHẤT", time: 15000 },
-    { text: "HÃY LUÔN MỈM CƯỜI VÀ HẠNH PHÚC NHÉ!", time: 15000 },
-    { text: "CHÚC EM 8/3 VUI VẺ :)))))", time: 15500 } 
+    { text: "ANH LỠ YÊU EM MẤT RỒI", time: 6000 }, 
+    { text: "YÊU RẤT NHIỀU", time: 5500 },
+    { text: "DÙ CHO EM CÓ NÓI", time: 5500 },
+    { text: "RẰNG TA SẼ KHÔNG THỂ BÊN NHAU", time: 6000 },
+    { text: "THÌ", time: 3500 }, 
+    { text: "ANH VẪN LUÔN YÊU EM", time: 5500 },
+    { text: "SẼ LUÔN ", time: 3500 },
+    { text: "GỬI CHO EM NHỮNG LỜI CHÚC TỐT ĐẸP NHẤT", time: 8000 },
+    { text: "HÃY LUÔN MỈM CƯỜI VÀ HẠNH PHÚC NHÉ!", time: 8000 },
+    { text: "CHÚC EM 8/3 VUI VẺ :)))))", time: 10000 } 
 ]; 
 
 function setCanvasSize() {
@@ -66,18 +66,25 @@ async function init(text) {
     const scale = window.devicePixelRatio || 1;
     const offCanvas = document.createElement('canvas');
     const offCtx = offCanvas.getContext('2d');
+    
+    // Tăng độ phân giải cho canvas phụ để quét dấu tiếng Việt chuẩn hơn
     offCanvas.width = canvas.width;
     offCanvas.height = canvas.height;
 
-    let fontSize = isMobile ? 32 : 85;
-    if (text.length > 20) fontSize = isMobile ? 22 : 60;
+    // Cấu hình Font linh hoạt theo màn hình
+    let fontSize = isMobile ? 28 : 85; 
+    if (text.length > 20) fontSize = isMobile ? 18 : 60;
 
     offCtx.scale(scale, scale);
     offCtx.font = `900 ${fontSize}px "Montserrat", sans-serif`;
     offCtx.textAlign = "center";
     offCtx.textBaseline = "middle";
-    // Giãn chữ để dấu không bị dính
-    offCanvas.style.letterSpacing = "3px";
+    
+    // GIẢI PHÁP 1: Giãn cách chữ trên mobile rộng hơn để tránh dính nét
+    const letterSpacing = isMobile ? "4px" : "2px";
+    offCanvas.style.letterSpacing = letterSpacing;
+    offCtx.canvas.style.letterSpacing = letterSpacing;
+    
     offCtx.fillStyle = "white";
 
     const drawX = window.innerWidth / 2;
@@ -86,8 +93,10 @@ async function init(text) {
 
     if (words.length > 3 || text.length > 15) {
         const mid = Math.ceil(words.length / 2);
-        offCtx.fillText(words.slice(0, mid).join(' '), drawX, drawY - fontSize * 0.75);
-        offCtx.fillText(words.slice(mid).join(' '), drawX, drawY + fontSize * 0.75);
+        // GIẢI PHÁP 2: Tăng khoảng cách dòng trên mobile (0.85) để dấu không chạm chữ
+        const lineGap = isMobile ? 0.85 : 0.75;
+        offCtx.fillText(words.slice(0, mid).join(' '), drawX, drawY - fontSize * lineGap);
+        offCtx.fillText(words.slice(mid).join(' '), drawX, drawY + fontSize * lineGap);
     } else {
         offCtx.fillText(text, drawX, drawY);
     }
@@ -95,20 +104,24 @@ async function init(text) {
     const imageData = offCtx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
     let textNodes = [];
-    let step = isMobile ? 2.0 : 2.5; 
+
+    // GIẢI PHÁP 3: Điều chỉnh bước quét (step) cực mịn cho điện thoại
+    // Mobile cần bước quét nhỏ hơn (1.6) để nhận diện các dấu nhỏ (hỏi, ngã)
+    let step = isMobile ? 1.6 : 2.5; 
 
     for (let y = 0; y < canvas.height; y += step * scale) {
         for (let x = 0; x < canvas.width; x += step * scale) {
             const index = (Math.floor(y) * canvas.width + Math.floor(x)) * 4 + 3;
-            if (data[index] > 160) { // Ngưỡng cao để nét chữ sắc sảo
+            // Ngưỡng Alpha 150 để lấy nét chữ sắc sảo, không bị nhòe rìa
+            if (data[index] > 150) { 
                 textNodes.push({ x: x / scale, y: y / scale });
             }
         }
     }
 
-    // Tự động bù hạt nếu câu quá dài
+    // Tự động bù hạt nếu số lượng điểm chữ lớn hơn số hạt hiện có
     while (particles.length < textNodes.length) {
-        particles.push(new Particle(Math.random()*window.innerWidth, Math.random()*window.innerHeight));
+        particles.push(new Particle(Math.random() * window.innerWidth, Math.random() * window.innerHeight));
     }
 
     textNodes.sort(() => Math.random() - 0.5);
@@ -119,7 +132,8 @@ async function init(text) {
             p.targetX = textNodes[i].x;
             p.targetY = textNodes[i].y;
             p.isText = true;
-            p.size = isMobile ? 1.6 : 2.2;
+            // GIẢI PHÁP 4: Kích thước hạt nhỏ hơn trên Mobile (1.4) để tạo khe hở giữa các nét
+            p.size = isMobile ? 1.4 : 2.2;
             p.ease = 0.12;
         } else {
             p.targetX = Math.random() * window.innerWidth;
