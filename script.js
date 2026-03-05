@@ -7,16 +7,16 @@ let isRunning = false;
 const isMobile = window.innerWidth < 600;
 
 const messages = [
-    { text: "aNh lỠ yÊu Em MấT rỒi", time: 5500 }, 
-    { text: "YêU rẤt NhIềU", time: 5000 },
-    { text: "dÙ ChO eM cÓ nÓi", time: 5000 },
-    { text: "RằNg Ta Sẽ KhÔnG tHể BêN NhAu", time: 5500 },
-    { text: "ThÌ", time: 3500 }, 
-    { text: "AnH vẪn LuÔn YêU eM", time: 5000 },
-    { text: "sẼ LuÔn ", time: 3500 },
-    { text: "GửI ChO Em NhỮnG lỜi ChÚc TốT đẸp NhẤt", time: 7500 },
-    { text: "HãY LuÔn MỉM cƯờI Và HạNh PhÚc NhÉ !!!", time: 7500 },
-    { text: "cHúC eM 8/3 vUi Vẻ :)))))", time: 10000 } 
+    { text: "ANH LỠ YÊU EM MẤT RỒI", time: 5500 }, 
+    { text: "YÊU RẤT NHIỀU", time: 5000 },
+    { text: "DÙ EM CÓ NÓI", time: 5000 },
+    { text: "RẰNG TA KHÔNG THỂ BÊN NHAU", time: 5500 },
+    { text: "THÌ", time: 3500 }, 
+    { text: "ANH VẪN LUÔN YÊU EM", time: 5000 },
+    { text: "SẼ LUÔN", time: 3500 },
+    { text: "GỬI CHO EM NHỮNG LỜI CHÚC TỐT ĐẸP NHẤT", time: 7500 },
+    { text: "HÃY LUÔN MỈM CƯỜI VÀ HẠNH PHÚC NHÉ !!!", time: 7500 },
+    { text: "CHÚC EM 8/3 VUI VẺ :)))))", time: 10000 } 
 ]; 
 
 function setCanvasSize() {
@@ -192,4 +192,5 @@ document.fonts.ready.then(async () => {
     initChaos();
     animate();
 });
+
 
