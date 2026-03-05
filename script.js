@@ -1,34 +1,31 @@
 const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d', { willReadFrequently: true });
+const ctx = canvas.getContext('2d', {观察: true, willReadFrequently: true });
 
 let particles = [];
 let currentMsgIndex = -1; 
 let isRunning = false; 
 
-// 1. KIỂM TRA THIẾT BỊ NGAY TỪ ĐẦU
 const isMobile = window.innerWidth < 600;
-
 const messages = [
-    { text: "ANH LỠ YÊU EM MẤT RỒI", time: 15000 }, 
-    { text: "YÊU RẤT NHIỀU", time: 15000 },
-    { text: "DÙ CHO EM CÓ NÓI", time: 15000 },
-    { text: "RẰNG TA SẼ KHÔNG THỂ BÊN NHAU", time: 15000 },
-    { text: "THÌ", time: 15000 }, 
-    { text: "ANH VẪN LUôn YÊU EM", time: 15000 },
-    { text: "SẼ LUÔN ", time: 15000 },
-    { text: "GỬI CHO EM NHỮNG LỜI CHÚC TỐT ĐẸP NHẤT", time: 15000 },
-    { text: "HÃY LUÔN MỈM CƯỜI VÀ HẠNH PHÚC NHÉ!", time: 15000 },
-    { text: "CHÚC EM 8/3 VUI VẺ :)))))", time: 20000 } 
+    { text: "ANH LỠ YÊU EM MẤT RỒI", time: 10000 }, 
+    { text: "YÊU RẤT NHIỀU", time: 10000 },
+    { text: "DÙ CHO EM CÓ NÓI", time: 10000 },
+    { text: "RẰNG TA SẼ KHÔNG THỂ BÊN NHAU", time: 10000 },
+    { text: "THÌ", time: 10000 }, 
+    { text: "ANH VẪN LUÔN YÊU EM", time: 10000 },
+    { text: "SẼ LUÔN ", time: 10000 },
+    { text: "GỬI CHO EM NHỮNG LỜI CHÚC TỐT ĐẸP NHẤT", time: 12000 },
+    { text: "HÃY LUÔN MỈM CƯỜI VÀ HẠNH PHÚC NHÉ!", time: 12000 },
+    { text: "CHÚC EM 8/3 VUI VẺ :)))))", time: 15000 } 
 ]; 
 
 function setCanvasSize() {
     const scale = window.devicePixelRatio || 1;
     canvas.width = window.innerWidth * scale;
     canvas.height = window.innerHeight * scale;
-    ctx.imageSmoothingEnabled = false;
-    ctx.setTransform(scale, 0, 0, scale, 0, 0);
     canvas.style.width = window.innerWidth + 'px';
     canvas.style.height = window.innerHeight + 'px';
+    ctx.scale(scale, scale);
 }
 window.addEventListener('resize', setCanvasSize);
 setCanvasSize();
@@ -40,19 +37,25 @@ class Particle {
         this.targetX = targetX;
         this.targetY = targetY;
         this.isText = isText;
-        // Tối ưu kích thước hạt cho Mobile để chữ nét hơn (giảm từ 1.6 xuống 1.4)
-        this.size = isText ? (isMobile ? 1.4 : 2.2) : 0.8; 
+        // Hạt nền nhỏ hơn hạt chữ nhưng vẫn phải đủ để thấy
+        this.size = isText ? (isMobile ? 1.5 : 2.5) : 1.0; 
         this.baseColor = { h: 345, s: 99 }; 
-        // 2. TĂNG Ease TRÊN MOBILE ĐỂ HẠN BAY NHANH HƠN (0.12)
-        this.ease = isText ? (isMobile ? 0.25 : 0.15) : 0.08; 
+        this.ease = isText ? 0.15 : 0.05; 
     }
+    
     draw() {
-        const lightness = this.isText ? 45 : 15;
-        ctx.fillStyle = `hsl(${this.baseColor.h}, ${this.baseColor.s}%, ${lightness}%)`;
+        // CHỈNH LẠI Ở ĐÂY:
+        // Hạt chữ: Sáng (55%), Rõ (Opacity 1)
+        // Hạt nền: Tối hơn (25%), Mờ nhẹ (Opacity 0.4) để vẫn nhìn thấy được
+        const lightness = this.isText ? 55 : 25;
+        const opacity = this.isText ? 1 : 0.4; 
+        
+        ctx.fillStyle = `hsla(${this.baseColor.h}, ${this.baseColor.s}%, ${lightness}%, ${opacity})`;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fill();
     }
+    
     update() {
         this.x += (this.targetX - this.x) * this.ease;
         this.y += (this.targetY - this.y) * this.ease;
@@ -61,10 +64,8 @@ class Particle {
 
 function initChaos() {
     particles = [];
-    // 3. CHIA SỐ HẠT: Máy tính 10k, Điện thoại 6k hạt
-    const particleCount = isMobile ? 6000 : 10000;
- 
-    for (let i = 0; i < particleCount; i++) {
+    const count = isMobile ? 6000 : 12000;
+    for (let i = 0; i < count; i++) {
         const x = Math.random() * window.innerWidth;
         const y = Math.random() * window.innerHeight;
         particles.push(new Particle(x, y, x, y, false));
@@ -72,149 +73,112 @@ function initChaos() {
 }
 
 async function init(text) {
-    let fontSize;
-    // 4. SỬA LỖI MẤT CHỮ: Giảm cỡ chữ tối đa trên Mobile xuống 30px (thay vì 38px)
-    if (isMobile) {
-        fontSize = text.length > 15 ? 22 : 30; // Giảm 30px để "YÊU RẤT NHIỀU" không bị tràn
-    } else {
-        fontSize = text.length > 15 ? 60 : 100;
-    }
-
-    const fontStr = `900 ${fontSize}px "Montserrat", sans-serif`;
-    await document.fonts.load(fontStr); 
-
-    const oldParticles = [...particles];
-    let textParticles = [];
-    let extraParticles = [];
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.font = fontStr;
+    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    let fontSize = isMobile ? (text.length > 15 ? 26 : 38) : (text.length > 15 ? 70 : 100);
+    ctx.font = `900 ${fontSize}px "Montserrat", sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "white";
 
-    if (isMobile && text.includes(" ") && text.length > 10) {
+    const drawX = window.innerWidth / 2;
+    const drawY = window.innerHeight / 2;
+
+    if (isMobile && text.includes(" ") && text.length > 12) {
         const words = text.split(' ');
         const mid = Math.ceil(words.length / 2);
-        const line1 = words.slice(0, mid).join(' ');
-        const line2 = words.slice(mid).join(' ');
-        
-        ctx.fillText(line1, window.innerWidth / 2, window.innerHeight / 2 - fontSize * 0.8);
-        ctx.fillText(line2, window.innerWidth / 2, window.innerHeight / 2 + fontSize * 0.8);
+        ctx.fillText(words.slice(0, mid).join(' '), drawX, drawY - fontSize * 0.6);
+        ctx.fillText(words.slice(mid).join(' '), drawX, drawY + fontSize * 0.6);
     } else {
-        ctx.fillText(text, window.innerWidth / 2, window.innerHeight / 2);
+        ctx.fillText(text, drawX, drawY);
     }
 
     const scale = window.devicePixelRatio || 1;
-    const imageData = ctx.getImageData(0, 0, canvas.width * scale, canvas.height * scale);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // 5. GIẢM STEP ĐỂ CHỮ NÉT HƠN TRÊN MOBILE: 1.1 (thay vì 1.3)
-    let step = (isMobile ? 1.1 : 1.8) * scale; 
-
-    let count = 0;
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
-    const cols = Math.floor(canvas.width * scale);
+    ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
-    for (let y = 0; y < canvas.height * scale; y += step) {
-        const rowOffset = Math.floor(y) * cols;
-        for (let x = 0; x < canvas.width * scale; x += step) {
-            const index = (rowOffset + Math.floor(x)) * 4 + 3;
+    let textNodes = [];
+    let step = isMobile ? 3 : 4; 
 
-            if (data[index] > 120) {
-                // Kiểm tra và sử dụng hạt cũ, hoặc tạo mới nếu thiếu
-                if (count < oldParticles.length) {
-                    let p = oldParticles[count];
-                    p.targetX = x / scale;
-                    p.targetY = y / scale;
-                    p.isText = true;
-                    // Kích thước hạt chữ trên Mobile nhỏ hơn để nét chữ mảnh và sắc
-                    p.size = isMobile ? 1.4 : 2.5; 
-                    textParticles.push(p);
-                    count++;
-                } else {
-                    // Nếu thiếu hạt, tạo hạt mới để chữ không bị thưa
-                    const p = new Particle(x / scale, y / scale, x / scale, y / scale, true);
-                    p.size = isMobile ? 1.4 : 2.5;
-                    textParticles.push(p);
-                    count++;
-                }
+    for (let y = 0; y < canvas.height; y += step) {
+        for (let x = 0; x < canvas.width; x += step) {
+            const index = (y * canvas.width + x) * 4 + 3;
+            if (data[index] > 120) { 
+                textNodes.push({ x: x / scale, y: y / scale });
             }
         }
     }
 
-    while (count < oldParticles.length) {
-        let p = oldParticles[count];
-        p.targetX = Math.random() * window.innerWidth;
-        p.targetY = Math.random() * window.innerHeight;
-        p.isText = false;
-        p.size = isMobile ? 0.6 : 1.2; // Hạt nền li ti cho Mobile
-        extraParticles.push(p);
-        count++;
-    }
+    textNodes.sort(() => Math.random() - 0.5);
 
-    particles = [...extraParticles, ...textParticles];
+    for (let i = 0; i < particles.length; i++) {
+        let p = particles[i];
+        if (i < textNodes.length) {
+            p.targetX = textNodes[i].x;
+            p.targetY = textNodes[i].y;
+            p.isText = true;
+            p.size = isMobile ? 1.6 : 2.6;
+        } else {
+            // CHỈNH LẠI Ở ĐÂY:
+            // Cho hạt nền bay ngẫu nhiên nhưng không đứng yên một chỗ
+            p.targetX = Math.random() * window.innerWidth;
+            p.targetY = Math.random() * window.innerHeight;
+            p.isText = false;
+            p.size = 0.8; // Tăng size hạt nền lên một chút để dễ nhìn thấy hơn
+        }
+    }
 }
 
-let timeoutId; 
+function animate() {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.12)'; 
+    ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+    
+    // Tách hạt làm 2 loại để vẽ theo thứ tự lớp (Layering)
+    const backgroundParticles = [];
+    const textParticles = [];
+    
+    for(let p of particles) {
+        if(p.isText) textParticles.push(p);
+        else backgroundParticles.push(p);
+    }
+
+    // 1. Vẽ hạt nền trước (nằm dưới)
+    backgroundParticles.forEach(p => { p.update(); p.draw(); });
+
+    // Vẽ hạt chữ (Lớp trên - đè lên hạt nền)
+    textParticles.forEach(p => { p.update(); p.draw(); });
+
+    requestAnimationFrame(animate);
+}
+
 function startSequence() {
     if (isRunning) return;
     isRunning = true;
     currentMsgIndex = -1; 
 
-    async function next() {
+    const next = async () => {
         currentMsgIndex++;
         if (currentMsgIndex < messages.length) {
-            const currentObj = messages[currentMsgIndex];
-            
-            // Hiệu ứng hạt bung ra trước khi tụ lại thành chữ mới
             particles.forEach(p => {
-                p.targetX += (Math.random() - 0.5) * 150; // Tăng độ bung cho Mobile
-                p.targetY += (Math.random() - 0.5) * 150;
+                p.targetX += (Math.random() - 0.5) * 100;
+                p.targetY += (Math.random() - 0.5) * 100;
             });
-
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(async () => {
-                await init(currentObj.text);
-                timeoutId = setTimeout(next, currentObj.time);
-            }, 80); // Chờ 100ms cho hiệu ứng bung
-
+            setTimeout(async () => {
+                await init(messages[currentMsgIndex].text);
+                setTimeout(next, messages[currentMsgIndex].time);
+            }, 100);
         } else {
-            // Kết thúc: Các hạt bay hỗn loạn
-            particles.forEach(p => {
-                p.targetX = Math.random() * window.innerWidth;
-                p.targetY = Math.random() * window.innerHeight;
-                p.isText = false;
-            });
-            currentMsgIndex = -1;
             isRunning = false;
+            initChaos();
         }
-    }
+    };
     next();
 }
 
-function animate() {
-    // Tạo hiệu ứng đuôi mờ cho hạt
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'; 
-    ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-    particles.forEach(p => { p.update(); p.draw(); });
-    requestAnimationFrame(animate);
-}
-
-// Hỗ trợ cả chuột và chạm tay
 window.addEventListener('mousedown', startSequence);
-window.addEventListener('touchstart', startSequence, { passive: true });
+window.addEventListener('touchstart', (e) => { e.preventDefault(); startSequence(); }, { passive: false });
 
-// Khởi tạo
-async function prepareFont() {
-    // Đảm bảo font được tải xong trước khi vẽ
-    await document.fonts.ready; 
-    await document.fonts.load('900 40px "Montserrat"');
-    ctx.font = '900 40px "Montserrat"';
-    // Vẽ nháp để buộc trình duyệt tải font
-    ctx.fillText("loading", -1000, -1000);
+document.fonts.ready.then(() => {
     initChaos();
     animate();
-}
-
-prepareFont();
+});
