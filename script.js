@@ -113,12 +113,16 @@ async function init(text) {
             const index = (posY * Math.floor(canvas.width * scale) + posX) * 4 + 3;
 
             if (imageData.data[index] > 120) {
-                if (oldParticles[count]) {
+                if (count < oldParticles.length) {
                     let p = oldParticles[count];
                     p.targetX = posX / scale;
                     p.targetY = posY / scale;
                     p.isText = true;
                     p.size = isMobile ? 1.6 : 2.5; 
+                    textParticles.push(p);
+                } else {
+                    const p = new Particle(posX / scale, posY / scale, posX / scale, posY / scale, true);
+                    p.size = isMobile ? 1.6 : 2.5;
                     textParticles.push(p);
                 }
                 count++;
@@ -196,3 +200,4 @@ async function prepareFont() {
 
 
 prepareFont();
+
