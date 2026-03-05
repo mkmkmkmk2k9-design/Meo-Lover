@@ -9,16 +9,16 @@ let isRunning = false;
 const isMobile = window.innerWidth < 600;
 
 const messages = [
-    { text: "ANH LỠ YÊU EM MẤT RỒI", time: 4500 }, 
-    { text: "YÊU RẤT NHIỀU", time: 5000 },
-    { text: "DÙ CHO EM CÓ NÓI", time: 5500 },
-    { text: "RẰNG TA SẼ KHÔNG THỂ BÊN NHAU", time: 6500 },
-    { text: "THÌ", time: 6000 }, 
-    { text: "ANH VẪN LUÔN YÊU EM", time: 7500 },
-    { text: "SẼ LUÔN ", time: 7000 },
-    { text: "GỬI CHO EM NHỮNG LỜI CHÚC TỐT ĐẸP NHẤT", time: 9000 },
-    { text: "HÃY LUÔN MỈM CƯỜI VÀ HẠNH PHÚC NHÉ!", time: 10000 },
-    { text: "CHÚC EM 8/3 VUI VẺ :)))))", time: 15000 } 
+    { text: "ANH LỠ YÊU EM MẤT RỒI", time: 10000 }, 
+    { text: "YÊU RẤT NHIỀU", time: 11000 },
+    { text: "DÙ CHO EM CÓ NÓI", time: 12000 },
+    { text: "RẰNG TA SẼ KHÔNG THỂ BÊN NHAU", time: 13000 },
+    { text: "THÌ", time: 14000 }, 
+    { text: "ANH VẪN LUÔN YÊU EM", time: 15000 },
+    { text: "SẼ LUÔN ", time: 16000 },
+    { text: "GỬI CHO EM NHỮNG LỜI CHÚC TỐT ĐẸP NHẤT", time: 18000 },
+    { text: "HÃY LUÔN MỈM CƯỜI VÀ HẠNH PHÚC NHÉ!", time: 20000 },
+    { text: "CHÚC EM 8/3 VUI VẺ :)))))", time: 30000 } 
 ]; 
 
 function setCanvasSize() {
@@ -218,3 +218,4 @@ async function prepareFont() {
 }
 
 prepareFont();
+
