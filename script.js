@@ -44,7 +44,7 @@ class Particle {
         this.size = isText ? (isMobile ? 1.4 : 2.2) : 0.8; 
         this.baseColor = { h: 345, s: 99 }; 
         // 2. TĂNG Ease TRÊN MOBILE ĐỂ HẠN BAY NHANH HƠN (0.12)
-        this.ease = isText ? (isMobile ? 0.12 : 0.07) : 0.03; 
+        this.ease = isText ? (isMobile ? 0.25 : 0.15) : 0.08; 
     }
     draw() {
         const lightness = this.isText ? 45 : 15;
@@ -177,7 +177,7 @@ function startSequence() {
             timeoutId = setTimeout(async () => {
                 await init(currentObj.text);
                 timeoutId = setTimeout(next, currentObj.time);
-            }, 100); // Chờ 100ms cho hiệu ứng bung
+            }, 80); // Chờ 100ms cho hiệu ứng bung
 
         } else {
             // Kết thúc: Các hạt bay hỗn loạn
@@ -195,7 +195,7 @@ function startSequence() {
 
 function animate() {
     // Tạo hiệu ứng đuôi mờ cho hạt
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.8)'; 
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'; 
     ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
     particles.forEach(p => { p.update(); p.draw(); });
     requestAnimationFrame(animate);
