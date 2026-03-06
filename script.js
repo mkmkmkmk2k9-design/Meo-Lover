@@ -97,7 +97,7 @@ function initChaos() {
 async function init(text) {
 
     const scale = window.devicePixelRatio || 1;
-    const hiResScale = isMobileDevice() ? 1.2 : 2;
+    const hiResScale = isMobileDevice() ? 1.25 : 2;
 
     const offCanvas = document.createElement('canvas');
     const offCtx = offCanvas.getContext('2d');
@@ -172,7 +172,7 @@ async function init(text) {
 
     let textNodes = [];
 
-    let step = isMobileDevice() ? 0.9 : 1.8;
+    let step = isMobileDevice() ? 0.95 : 1.8;
 
     for (let y = 0; y < offCanvas.height; y += step * scale) {
 
@@ -216,7 +216,7 @@ async function init(text) {
             p.targetY = textNodes[i].y;
             p.isText = true;
 
-            p.size = isMobileDevice() ? 1.2 : 1.7;
+            p.size = isMobileDevice() ? 1.1 : 1.7;
             p.ease = isMobileDevice() ? 0.4 : 0.2; 
 
         } else {
