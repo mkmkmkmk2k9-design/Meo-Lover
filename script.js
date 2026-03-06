@@ -80,7 +80,7 @@ function initChaos() {
 
     particles = [];
 
-    const count = isMobileDevice() ? 4500 : 9000;
+    const count = isMobileDevice() ? 3000 : 6000;
 
     for (let i = 0; i < count; i++) {
 
@@ -97,15 +97,15 @@ function initChaos() {
 async function init(text) {
 
     const scale = window.devicePixelRatio || 1;
+    const hiResScale = 2;
 
     const offCanvas = document.createElement('canvas');
     const offCtx = offCanvas.getContext('2d');
     offCtx.imageSmoothingEnabled = true;
 
-    offCanvas.width = canvas.width;
-    offCanvas.height = canvas.height;
-
-    offCtx.scale(scale, scale);
+    offCanvas.width = canvas.width * hiResScale;
+    offCanvas.height = canvas.height * hiResScale;
+    offCtx.scale(hiResScale, hiResScale);
 
     let fontSize;
 
@@ -167,24 +167,24 @@ async function init(text) {
 
     // ===== PARTICLE SCAN =====
 
-    const imageData = offCtx.getImageData(0, 0, canvas.width, canvas.height);
+    const imageData = offCtx.getImageData(0, 0, offCanvas.width, offCanvas.height);
     const data = imageData.data;
 
     let textNodes = [];
 
-    let step = isMobileDevice() ? 1.8555555 : 1.55555555555555555;
+    let step = isMobileDevice() ? 1.85 : 1.55;
 
-    for (let y = 0; y < canvas.height; y += step * scale) {
+    for (let y = 0; y < offCanvas.height; y += step * scale) {
 
-        for (let x = 0; x < canvas.width; x += step * scale) {
+        for (let x = 0; x < offCanvas.width; x += step * scale) {
 
-            const index = (Math.floor(y) * canvas.width + Math.floor(x)) * 4 + 3;
+            const index = (Math.floor(y) * offCanvas.width + Math.floor(x)) * 4 + 3;
 
             if (data[index] > 200) {
 
                 textNodes.push({
-                    x: x / scale,
-                    y: y / scale
+                    x: x /hiResScale,
+                    y: y /hiResScale
                 });
 
             }
@@ -217,7 +217,7 @@ async function init(text) {
             p.isText = true;
 
             p.size = isMobileDevice() ? 1.4 : 1.7;
-            p.ease = 0.14;
+            p.ease = 0.2;
 
         } else {
 
@@ -236,19 +236,19 @@ async function init(text) {
 
 function animate() {
 
-    ctx.fillStyle = 'rgba(0,0,0,0.15)';
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
     ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
     for (let i = 0; i < particles.length; i++) {
-
+        
         if (!particles[i].isText) {
-
-            particles[i].update();
+            
+            particles[i].update();          
             particles[i].draw();
-
+        
         }
-
-    }
+    
+    } 
 
     for (let i = 0; i < particles.length; i++) {
 
@@ -260,7 +260,6 @@ function animate() {
         }
 
     }
-
     requestAnimationFrame(animate);
 }
 
