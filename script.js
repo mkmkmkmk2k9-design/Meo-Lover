@@ -12,7 +12,7 @@ function isMobileDevice() {
 
 const messages = [
     { text: "ANH LỠ YÊU EM MẤT RỒI", time: 3500 }, 
-    { text: "YÊU RẤT NHIỀU", time: 3500 },
+    { text: "THỰC SỰ YÊU EM RẤT NHIỀU", time: 3500 },
     { text: "DÙ CHO EM CÓ NÓI", time: 3500 },
     { text: "RẰNG TA SẼ KHÔNG THỂ BÊN NHAU", time: 4500 },
     { text: "THÌ", time: 2500 }, 
@@ -172,7 +172,7 @@ async function init(text) {
 
     let textNodes = [];
 
-    let step = isMobileDevice() ? 0.6 : 1.8;
+    let step = isMobileDevice() ? 0.9 : 1.8;
 
     for (let y = 0; y < offCanvas.height; y += step * scale) {
 
@@ -216,7 +216,7 @@ async function init(text) {
             p.targetY = textNodes[i].y;
             p.isText = true;
 
-            p.size = isMobileDevice() ? 1.5 : 1.7;
+            p.size = isMobileDevice() ? 1.2 : 1.7;
             p.ease = isMobileDevice() ? 0.4 : 0.2; 
 
         } else {
