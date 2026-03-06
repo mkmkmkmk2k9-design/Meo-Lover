@@ -80,7 +80,7 @@ function initChaos() {
 
     particles = [];
 
-    const count = isMobileDevice() ? 3000 : 6000;
+    const count = isMobileDevice() ? 2000 : 6000;
 
     for (let i = 0; i < count; i++) {
 
@@ -172,7 +172,7 @@ async function init(text) {
 
     let textNodes = [];
 
-    let step = isMobileDevice() ? 1.85 : 1.55;
+    let step = isMobileDevice() ? 1.35 : 1.55;
 
     for (let y = 0; y < offCanvas.height; y += step * scale) {
 
@@ -216,8 +216,8 @@ async function init(text) {
             p.targetY = textNodes[i].y;
             p.isText = true;
 
-            p.size = isMobileDevice() ? 1.4 : 1.7;
-            p.ease = 0.2;
+            p.size = isMobileDevice() ? 2.1 : 1.7;
+            p.ease = isMobileDevice() ? 0.25 : 0.2; 
 
         } else {
 
@@ -225,7 +225,7 @@ async function init(text) {
             p.targetY = Math.random() * window.innerHeight;
 
             p.isText = false;
-            p.size = 0.8;
+            p.size = 0.9;
             p.ease = 0.05;
 
         }
