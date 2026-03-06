@@ -11,13 +11,13 @@ function isMobileDevice() {
 }
 
 const messages = [
-    { text: "ANH LỠ YÊU EM MẤT RỒI", time: 5000 }, 
-    { text: "YÊU RẤT NHIỀU", time: 4000 },
-    { text: "DÙ CHO EM CÓ NÓI", time: 4000 },
-    { text: "RẰNG TA SẼ KHÔNG THỂ BÊN NHAU", time: 5000 },
+    { text: "ANH LỠ YÊU EM MẤT RỒI", time: 5500 }, 
+    { text: "YÊU RẤT NHIỀU", time: 5000 },
+    { text: "DÙ CHO EM CÓ NÓI", time: 5000 },
+    { text: "RẰNG TA SẼ KHÔNG THỂ BÊN NHAU", time: 6000 },
     { text: "THÌ", time: 4000 }, 
     { text: "ANH VẪN LUÔN YÊU EM", time: 5000 },
-    { text: "SẼ LUÔN ", time: 3000 },
+    { text: "SẼ LUÔN ", time: 4000 },
     { text: "GỬI CHO EM NHỮNG LỜI CHÚC TỐT ĐẸP NHẤT", time: 8000 },
     { text: "HÃY LUÔN MỈM CƯỜI VÀ HẠNH PHÚC NHÉ !!!", time: 8000 },
     { text: "CHÚC EM 8/3 VUI VẺ :)))))", time: 10000 } 
@@ -65,7 +65,7 @@ class Particle {
     }
 
     draw() {
-        const opacity = this.isText ? (isMobileDevice() ? 0.85 : 1) : 0.5;
+        const opacity = this.isText ? 1 : 0.5;
         const lightness = this.isText ? (isMobileDevice() ? 45 : 55) : 30;
 
         ctx.fillStyle = `hsla(345, 99%, ${lightness}%, ${opacity})`;
@@ -97,7 +97,7 @@ function initChaos() {
 async function init(text) {
 
     const scale = window.devicePixelRatio || 1;
-    const hiResScale = 2;
+    const hiResScale = isMobileDevice() ? 1.2 : 2;
 
     const offCanvas = document.createElement('canvas');
     const offCtx = offCanvas.getContext('2d');
@@ -172,7 +172,7 @@ async function init(text) {
 
     let textNodes = [];
 
-    let step = isMobileDevice() ? 0.8 : 1.55;
+    let step = isMobileDevice() ? 1.8 : 1.55;
 
     for (let y = 0; y < offCanvas.height; y += step * scale) {
 
@@ -216,7 +216,7 @@ async function init(text) {
             p.targetY = textNodes[i].y;
             p.isText = true;
 
-            p.size = isMobileDevice() ? 1.8 : 1.7;
+            p.size = isMobileDevice() ? 1.2 : 1.7;
             p.ease = isMobileDevice() ? 0.3 : 0.2; 
 
         } else {
