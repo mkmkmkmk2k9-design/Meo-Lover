@@ -80,7 +80,7 @@ function initChaos() {
 
     particles = [];
 
-    const count = isMobileDevice() ? 6000 : 10000;
+    const count = isMobileDevice() ? 5500 : 10000;
 
     for (let i = 0; i < count; i++) {
 
@@ -100,6 +100,7 @@ async function init(text) {
 
     const offCanvas = document.createElement('canvas');
     const offCtx = offCanvas.getContext('2d');
+    offCtx.imageSmoothingEnabled = true;
 
     offCanvas.width = canvas.width;
     offCanvas.height = canvas.height;
@@ -109,19 +110,11 @@ async function init(text) {
     let fontSize;
 
     if (isMobileDevice()) {
-
         fontSize = Math.min(window.innerWidth / 9, 42);
-
-        if (text.length > 20)
-            fontSize = Math.min(window.innerWidth / 12, 30);
-
+        if (text.length > 20) fontSize = Math.min(window.innerWidth / 12, 30);
     } else {
-
         fontSize = 85;
-
-        if (text.length > 20)
-            fontSize = 60;
-
+        if (text.length > 20) fontSize = 60;
     }
 
     offCtx.font = `900 ${fontSize}px "Montserrat", sans-serif`;
@@ -132,49 +125,54 @@ async function init(text) {
     const drawX = window.innerWidth / 2;
     const drawY = window.innerHeight / 2;
 
-    const words = text.split(' ');
+    // ===== AUTO LINE WRAP =====
+    const maxWidth = window.innerWidth * 0.85;
+    const words = text.split(" ");
 
-    if (words.length > 3 || text.length > 15) {
+    let lines = [];
+    let currentLine = words[0];
 
-        const mid = Math.ceil(words.length / 2);
+    for (let i = 1; i < words.length; i++) {
 
-        const lineGap = isMobileDevice() ? 0.9 : 0.75;
+        const testLine = currentLine + " " + words[i];
+        const metrics = offCtx.measureText(testLine);
 
-        offCtx.fillText(
-            words.slice(0, mid).join(' '),
-            drawX,
-            drawY - fontSize * lineGap
-        );
+        if (metrics.width > maxWidth) {
 
-        offCtx.fillText(
-            words.slice(mid).join(' '),
-            drawX,
-            drawY + fontSize * lineGap
-        );
+            lines.push(currentLine);
+            currentLine = words[i];
 
-    } else {
+        } else {
 
-        offCtx.fillText(text, drawX, drawY);
+            currentLine = testLine;
+
+        }
 
     }
 
-    const imageData = offCtx.getImageData(0, 0, canvas.width, canvas.height);
+    lines.push(currentLine);
 
+    const lineHeight = fontSize * (isMobileDevice() ? 1.15 : 1.05);
+    const startY = drawY - (lines.length - 1) * lineHeight / 2;
+
+    for (let i = 0; i < lines.length; i++) {
+
+        offCtx.fillText(
+            lines[i],
+            drawX,
+            startY + i * lineHeight
+        );
+
+    }
+
+    // ===== PARTICLE SCAN =====
+
+    const imageData = offCtx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
 
     let textNodes = [];
 
-    let step;
-
-    if (isMobileDevice()) {
-
-        step = 1.5;
-
-    } else {
-
-        step = 1.5;
-
-    }
+    let step = isMobileDevice() ? 1.85 : 1.555555555;
 
     for (let y = 0; y < canvas.height; y += step * scale) {
 
@@ -182,7 +180,7 @@ async function init(text) {
 
             const index = (Math.floor(y) * canvas.width + Math.floor(x)) * 4 + 3;
 
-            if (data[index] > 130) {
+            if (data[index] > 200) {
 
                 textNodes.push({
                     x: x / scale,
