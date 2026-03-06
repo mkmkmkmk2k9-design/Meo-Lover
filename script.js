@@ -11,16 +11,16 @@ function isMobileDevice() {
 }
 
 const messages = [
-    { text: "ANH LỠ YÊU EM MẤT RỒI", time: 4000 }, 
+    { text: "ANH LỠ YÊU EM MẤT RỒI", time: 3500 }, 
     { text: "YÊU RẤT NHIỀU", time: 3500 },
     { text: "DÙ CHO EM CÓ NÓI", time: 3500 },
     { text: "RẰNG TA SẼ KHÔNG THỂ BÊN NHAU", time: 4500 },
     { text: "THÌ", time: 2500 }, 
     { text: "ANH VẪN LUÔN YÊU EM", time: 3500 },
-    { text: "SẼ LUÔN ", time: 2500 },
-    { text: "GỬI CHO EM NHỮNG LỜI CHÚC TỐT ĐẸP NHẤT", time: 5000 },
-    { text: "HÃY LUÔN MỈM CƯỜI VÀ HẠNH PHÚC NHÉ !!!", time: 5000 },
-    { text: "CHÚC EM 8/3 VUI VẺ :)))))", time: 6000 } 
+    { text: "SẼ LUÔN ", time: 3500 },
+    { text: "GỬI CHO EM NHỮNG LỜI CHÚC TỐT ĐẸP NHẤT", time: 6000 },
+    { text: "HÃY LUÔN MỈM CƯỜI VÀ HẠNH PHÚC NHÉ !!!", time: 6000 },
+    { text: "CHÚC EM 8/3 VUI VẺ :)))))", time: 8000 } 
 ]; 
 
 function setCanvasSize() {
@@ -66,7 +66,7 @@ class Particle {
 
     draw() {
         const opacity = this.isText ? 1 : 0.5;
-        const lightness = this.isText ? (isMobileDevice() ? 45 : 55) : 30;
+        const lightness = this.isText ? (isMobileDevice() ? 40 : 50) : 30;
 
         ctx.fillStyle = `hsla(345, 99%, ${lightness}%, ${opacity})`;
 
@@ -172,7 +172,7 @@ async function init(text) {
 
     let textNodes = [];
 
-    let step = isMobileDevice() ? 1.2 : 1.55;
+    let step = isMobileDevice() ? 0.8 : 1.8;
 
     for (let y = 0; y < offCanvas.height; y += step * scale) {
 
@@ -180,7 +180,7 @@ async function init(text) {
 
             const index = (Math.floor(y) * offCanvas.width + Math.floor(x)) * 4 + 3;
 
-            if (data[index] > 200) {
+            if (data[index] > 250) {
 
                 textNodes.push({
                     x: x /hiResScale,
@@ -217,7 +217,7 @@ async function init(text) {
             p.isText = true;
 
             p.size = isMobileDevice() ? 1.8 : 1.7;
-            p.ease = isMobileDevice() ? 0.3 : 0.2; 
+            p.ease = isMobileDevice() ? 0.5 : 0.2; 
 
         } else {
 
@@ -239,7 +239,7 @@ function animate() {
     if (isMobileDevice()) {
         ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
     } else {
-        ctx.fillStyle = 'rgba(0,0,0,0.3)';
+        ctx.fillStyle = 'rgba(0,0,0,0.35)';
         ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
     }
 
