@@ -3,8 +3,14 @@ const ctx = canvas.getContext('2d', { willReadFrequently: true });
 ctx.imageSmoothingEnabled = true;
 
 let particles = [];
+let stars = [];
 let currentMsgIndex = -1; 
 let isRunning = false; 
+let beatCount = 0;
+let beatInterval;
+let isExploded = false;
+let showStars = false;
+let starOpacity = 0;
 
 function isMobileDevice() {
     return Math.min(window.innerWidth, window.innerHeight) < 700;
@@ -15,12 +21,22 @@ const messages = [
     { text: "THỰC SỰ YÊU EM RẤT NHIỀU", time: 3500 },
     { text: "DÙ CHO EM CÓ NÓI", time: 3500 },
     { text: "RẰNG TA SẼ KHÔNG THỂ BÊN NHAU", time: 4500 },
-    { text: "THÌ", time: 2500 }, 
+    { text: "THÌ", time: 3000 }, 
     { text: "ANH VẪN LUÔN YÊU EM", time: 3500 },
     { text: "SẼ LUÔN ", time: 3500 },
     { text: "GỬI CHO EM NHỮNG LỜI CHÚC TỐT ĐẸP NHẤT", time: 6000 },
     { text: "HÃY LUÔN MỈM CƯỜI VÀ HẠNH PHÚC NHÉ !!!", time: 6000 },
-    { text: "CHÚC EM 8/3 VUI VẺ :)))))", time: 8000 } 
+    { text: "CHÚC EM 8/3 VUI VẺ :)))))", 
+        time: 15000, 
+        onShow: () => {
+        setTimeout(() => {
+            showStars = true; // hiện background sao
+            explodeHeart();   // gom thành trái tim
+            setTimeout(() => {
+                startHeartBeat(); // tim đập
+            }, 1000); // bắt đầu tim đập
+        }, 10000);}
+    }
 ]; 
 
 function setCanvasSize() {
@@ -57,22 +73,50 @@ class Particle {
         this.size = 1;
         this.isText = false;
         this.ease = 0.1;
+        this.spin = 0;
+        this.opacity = 1;
+        this.alpha = 1;
+        this.star = Math.random() < 0.05;
     }
 
     update() {
+
+        if (isExploded) {
+
+        this.x += this.vx;
+        this.y += this.vy;
+
+        this.vx *= 0.97;
+        this.vy *= 0.97;
+
+        if (this.fade) this.alpha *= this.fade;
+
+        return;
+        }
+
         this.x += (this.targetX - this.x) * this.ease;
         this.y += (this.targetY - this.y) * this.ease;
+
     }
 
     draw() {
-        const opacity = this.isText ? 1 : 0.5;
-        const lightness = this.isText ? (isMobileDevice() ? 40 : 50) : 30;
 
-        ctx.fillStyle = `hsla(345, 99%, ${lightness}%, ${opacity})`;
+    if (this.alpha <= 0) return;
 
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
+    const opacity = this.alpha * (this.isText ? 1 : 0.5);
+    const lightness = this.isText ? (isMobileDevice() ? 45 : 55) : 35;
+
+    ctx.fillStyle = `hsla(345, 99%, ${lightness}%, ${opacity})`;
+
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 1.5);
+    ctx.fill();
+
+    // ⭐ sao lấp lánh
+    if (this.star && showStars) {
+        ctx.fillStyle = `rgba(255,255,255,${Math.random()})`;
+        ctx.fillRect(this.x, this.y, 1, 1);
+    }
     }
 }
 
@@ -80,7 +124,7 @@ function initChaos() {
 
     particles = [];
 
-    const count = isMobileDevice() ? 2000 : 6000;
+    const count = isMobileDevice() ? 1000 : 3000;
 
     for (let i = 0; i < count; i++) {
 
@@ -236,34 +280,30 @@ async function init(text) {
 
 function animate() {
 
-    if (isMobileDevice()) {
-        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-    } else {
-        ctx.fillStyle = 'rgba(0,0,0,0.35)';
-        ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-    }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // ⭐ background sao chỉ khi trái tim xuất hiện
+    if (showStars) {
+
+    starOpacity += 0.02;
+    if (starOpacity > 1) starOpacity = 1;
+
+    stars.forEach(s => {
+
+        ctx.fillStyle = `rgba(255,255,255,${s.alpha * starOpacity})`;
+        ctx.fillRect(s.x, s.y, s.size, s.size);
+
+    });
+
+   }
 
     for (let i = 0; i < particles.length; i++) {
-        
-        if (!particles[i].isText) {
-            
-            particles[i].update();          
-            particles[i].draw();
-        
-        }
-    
-    } 
 
-    for (let i = 0; i < particles.length; i++) {
-
-        if (particles[i].isText) {
-
-            particles[i].update();
-            particles[i].draw();
-
-        }
+        particles[i].update();
+        particles[i].draw();
 
     }
+
     requestAnimationFrame(animate);
 }
 
@@ -283,9 +323,15 @@ async function startSequence() {
 
         if (currentMsgIndex < messages.length) {
 
-            await init(messages[currentMsgIndex].text);
+            const msg = messages[currentMsgIndex];
 
-            setTimeout(next, messages[currentMsgIndex].time);
+            await init(msg.text);
+
+            if (msg.onShow) {
+                msg.onShow();
+            }
+
+            setTimeout(() => { if (!isExploded) next(); }, msg.time);
 
         } else {
 
@@ -310,6 +356,119 @@ async function startSequence() {
     next();
 }
 
+function initStars(){
+
+    stars = [];
+
+    for(let i=0;i<120;i++){
+
+        stars.push({
+            x: Math.random()*window.innerWidth,
+            y: Math.random()*window.innerHeight,
+            size: Math.random()*2,
+            alpha: Math.random()
+        });
+
+    }
+
+}
+
+let heartScale = 1;
+
+function explodeHeart() {
+
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+
+    const heart = [];
+
+    const scale = 12 * heartScale;
+
+    for (let t = 0; t < Math.PI * 2; t += 0.04) {
+
+        const x = 16 * Math.pow(Math.sin(t),3);
+        const y = 13 * Math.cos(t)
+                - 5 * Math.cos(2*t)
+                - 2 * Math.cos(3*t)
+                - Math.cos(4*t);
+
+        heart.push({
+            x: centerX + x * scale,
+            y: centerY - y * scale
+        });
+
+    }
+
+    particles.forEach((p,i)=>{
+
+        const pos = heart[i % heart.length];
+
+        p.targetX = pos.x;
+        p.targetY = pos.y;
+
+        p.size = 2;
+        p.ease = 0.08;
+        p.isText = true;
+
+    });
+
+}
+
+function startHeartBeat() {
+
+    beatCount = 0;
+
+    beatInterval = setInterval(() => {
+
+        beatCount++;
+
+        heartScale = 1.3;
+        explodeHeart();   // cập nhật tim phồng
+
+        setTimeout(() => {
+
+            heartScale = 1;
+            explodeHeart(); // tim co lại
+
+        }, 150);
+
+        if (beatCount > 24) {
+
+            clearInterval(beatInterval);
+            heartScale = 1;
+            explodeParticles();
+
+        }
+
+    }, 500);
+
+}
+
+function explodeParticles() {
+
+    isExploded = true;
+
+    particles.forEach(p => {
+
+        const angle = Math.random() * Math.PI * 2;
+
+        const speed = Math.random() * 6 + 3;
+
+        p.vx = Math.cos(angle) * speed;
+        p.vy = Math.sin(angle) * speed;
+
+        p.alpha = 1;
+
+        p.fade = 0.96 + Math.random() * 0.02;
+
+        p.ease = 0;
+
+        p.isText = true;
+
+    });
+
+}
+
 window.addEventListener('mousedown', startSequence);
 
 window.addEventListener(
@@ -326,7 +485,7 @@ document.fonts.ready.then(async () => {
     await document.fonts.load(`900 20px "Montserrat"`);
 
     initChaos();
-
+    initStars();
     animate();
 
 });
