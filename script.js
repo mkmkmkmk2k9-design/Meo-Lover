@@ -172,7 +172,7 @@ async function init(text) {
 
     let textNodes = [];
 
-    let step = isMobileDevice() ? 0.8 : 1.8;
+    let step = isMobileDevice() ? 0.6 : 1.8;
 
     for (let y = 0; y < offCanvas.height; y += step * scale) {
 
@@ -216,8 +216,8 @@ async function init(text) {
             p.targetY = textNodes[i].y;
             p.isText = true;
 
-            p.size = isMobileDevice() ? 1.8 : 1.7;
-            p.ease = isMobileDevice() ? 0.5 : 0.2; 
+            p.size = isMobileDevice() ? 1.5 : 1.7;
+            p.ease = isMobileDevice() ? 0.4 : 0.2; 
 
         } else {
 
@@ -225,7 +225,7 @@ async function init(text) {
             p.targetY = Math.random() * window.innerHeight;
 
             p.isText = false;
-            p.size = 0.9;
+            p.size = 1.0;
             p.ease = 0.05;
 
         }
