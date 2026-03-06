@@ -172,7 +172,7 @@ async function init(text) {
 
     let textNodes = [];
 
-    let step = isMobileDevice() ? 2.2 : 1.55;
+    let step = isMobileDevice() ? 2.8 : 1.55;
 
     for (let y = 0; y < offCanvas.height; y += step * scale) {
 
