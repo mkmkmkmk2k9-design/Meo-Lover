@@ -65,8 +65,8 @@ class Particle {
     }
 
     draw() {
-        const opacity = this.isText ? 1 : 0.5;
-        const lightness = this.isText ? 55 : 30;
+        const opacity = this.isText ? 1 : 0.6;
+        const lightness = this.isText ? 55 : 35;
 
         ctx.fillStyle = `hsla(345, 99%, ${lightness}%, ${opacity})`;
 
@@ -172,7 +172,7 @@ async function init(text) {
 
     let textNodes = [];
 
-    let step = isMobileDevice() ? 1.35 : 1.55;
+    let step = isMobileDevice() ? 1.15 : 1.55;
 
     for (let y = 0; y < offCanvas.height; y += step * scale) {
 
@@ -216,8 +216,8 @@ async function init(text) {
             p.targetY = textNodes[i].y;
             p.isText = true;
 
-            p.size = isMobileDevice() ? 2.5 : 1.7;
-            p.ease = isMobileDevice() ? 0.28 : 0.2; 
+            p.size = isMobileDevice() ? 2.8 : 1.7;
+            p.ease = isMobileDevice() ? 0.3 : 0.2; 
 
         } else {
 
