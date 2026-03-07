@@ -2,6 +2,11 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d', { willReadFrequently: true });
 ctx.imageSmoothingEnabled = true;
 
+const myMusic = new Audio('mmusic.mp3');
+myMusic.preload = 'auto';
+const START_TIME = 20;
+const END_TIME = 145;
+
 let particles = [];
 const BASE_COUNT = isMobileDevice() ? 1500 : 2000;
 let stars = [];
@@ -18,7 +23,7 @@ function isMobileDevice() {
 }
 
 const messages = [
-    { text: "ANH LỠ YÊU EM MẤT RỒI", time: 3550 }, 
+    { text: "ANH LỠ YÊU EM MẤT RỒI", time: 5000 }, 
     { text: "THỰC SỰ YÊU EM RẤT NHIỀU", time: 3550 },
     { text: "DÙ CHO EM CÓ NÓI", time: 4000 },
     { text: "RẰNG TA SẼ KHÔNG THỂ BÊN NHAU", time: 4000 },
@@ -321,6 +326,34 @@ function animate() {
 async function startSequence() {
 
     if (isRunning) return;
+
+    myMusic.currentTime = START_TIME;
+    myMusic.volume = 0.7;
+    myMusic.play().catch(e => console.log("Lỗi phát nhạc"));
+    let isFading = false;
+    
+    myMusic.ontimeupdate = function() {
+        // Khi còn 5 giây nữa là hết (tăng lên 5s cho dễ cảm nhận)
+        if (myMusic.currentTime >= END_TIME - 5 && !isFading) {
+            isFading = true; // Đánh dấu đang bắt đầu giảm âm lượng
+            
+            let fadeOutInterval = setInterval(() => {
+                if (myMusic.volume > 0.05) {
+                    myMusic.volume -= 0.05; // Giảm dần mỗi 200ms
+                } else {
+                    myMusic.volume = 0;
+                    myMusic.pause();
+                    clearInterval(fadeOutInterval);
+                }
+            }, 200); // 0.2 giây giảm 1 lần
+        }
+
+        // Chốt chặn cuối cùng nếu chẳng may vòng lặp trên chưa kịp chạy xong
+        if (myMusic.currentTime >= END_TIME) {
+            myMusic.pause();
+            myMusic.ontimeupdate = null;
+        }
+    };
 
     await document.fonts.load(`900 20px "Montserrat"`);
 
