@@ -17,13 +17,13 @@ function isMobileDevice() {
 }
 
 const messages = [
-    { text: "ANH LỠ YÊU EM MẤT RỒI", time: 4000 }, 
-    { text: "THỰC SỰ YÊU EM RẤT NHIỀU", time: 4000 },
+    { text: "ANH LỠ YÊU EM MẤT RỒI", time: 3550 }, 
+    { text: "THỰC SỰ YÊU EM RẤT NHIỀU", time: 3550 },
     { text: "DÙ CHO EM CÓ NÓI", time: 4000 },
     { text: "RẰNG TA SẼ KHÔNG THỂ BÊN NHAU", time: 4000 },
-    { text: "THÌ", time: 4000 }, 
+    { text: "THÌ", time: 4500 }, 
     { text: "ANH VẪN LUÔN YÊU EM", time: 4000 },
-    { text: "SẼ LUÔN ", time: 4000 },
+    { text: "SẼ LUÔN ", time: 5000 },
     { text: "GỬI CHO EM NHỮNG LỜI CHÚC TỐT ĐẸP NHẤT", time: 6500 },
     { text: "HÃY LUÔN MỈM CƯỜI VÀ HẠNH PHÚC NHÉ !!!", time: 6500 },
     { text: "CHÚC EM 8/3 VUI VẺ :)))))", 
@@ -31,10 +31,10 @@ const messages = [
         onShow: () => {
         setTimeout(() => {
             showStars = true; // hiện background sao
-            explodeHeart();   // gom thành trái tim
+            explodeHeart(0.15);   // gom thành trái tim
             setTimeout(() => {
                 startHeartBeat(); // tim đập
-            }, 1000); // bắt đầu tim đập
+            }, 2000); // bắt đầu tim đập
         }, 10000);}
     }
 ]; 
@@ -103,13 +103,13 @@ class Particle {
 
     if (this.alpha <= 0) return;
 
-    const opacity = this.alpha * (this.isText ? 1 : 0.5);
-    const lightness = this.isText ? (isMobileDevice() ? 45 : 55) : 35;
+    const opacity = this.alpha * (this.isText ? 0.9 : 0.5);
+    const lightness = this.isText ? (isMobileDevice() ? 30 : 40) : 35;
 
     ctx.fillStyle = `hsla(345, 99%, ${lightness}%, ${opacity})`;
 
     ctx.beginPath();
-    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 1.5);
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2.0);
     ctx.fill();
 
     // ⭐ sao lấp lánh
@@ -261,7 +261,7 @@ async function init(text) {
             p.isText = true;
 
             p.size = isMobileDevice() ? 1.1 : 1.7;
-            p.ease = isMobileDevice() ? 0.6 : 0.4; 
+            p.ease = isMobileDevice() ? 0.5 : 0.3; 
 
         } else {
 
@@ -280,7 +280,8 @@ async function init(text) {
 
 function animate() {
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)'; 
+    ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
     // ⭐ background sao chỉ khi trái tim xuất hiện
     if (showStars) {
@@ -375,74 +376,49 @@ function initStars(){
 
 let heartScale = 1;
 
-function explodeHeart() {
-
+function explodeHeart(customEase) { // Thêm tham số ở đây
     const centerX = canvas.width / (window.devicePixelRatio || 1) / 2;
     const centerY = canvas.height / (window.devicePixelRatio || 1) / 2;
-
     const heart = [];
-
     const base = Math.min(window.innerWidth, window.innerHeight);
     const scale = (base / 50) * heartScale;
 
     for (let t = 0; t < Math.PI * 2; t += 0.04) {
-
         const x = 16 * Math.pow(Math.sin(t),3);
-        const y = 13 * Math.cos(t)
-                - 5 * Math.cos(2*t)
-                - 2 * Math.cos(3*t)
-                - Math.cos(4*t);
-
-        heart.push({
-            x: centerX + x * scale,
-            y: centerY - y * scale
-        });
-
+        const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
+        heart.push({ x: centerX + x * scale, y: centerY - y * scale });
     }
 
-    particles.forEach((p,i)=>{
-
+    particles.forEach((p, i) => {
         const pos = heart[i % heart.length];
-
         p.targetX = pos.x;
         p.targetY = pos.y;
-
         p.size = 2;
-        p.ease = 0.08;
+        // Nếu có truyền customEase thì dùng, không thì dùng 0.08
+        p.ease = customEase || 0.08; 
         p.isText = true;
-
     });
-
 }
 
 function startHeartBeat() {
-
     beatCount = 0;
-
     beatInterval = setInterval(() => {
-
         beatCount++;
 
         heartScale = 1.3;
-        explodeHeart();   // cập nhật tim phồng
+        explodeHeart(0.25); // Đập ra cực nhanh (0.25) để hiện rõ hình to
 
         setTimeout(() => {
-
-            heartScale = 1;
-            explodeHeart(); // tim co lại
-
-        }, 150);
+            heartScale = 1.0;
+            explodeHeart(0.1); // Thu về chậm hơn một chút cho tự nhiên
+        }, 200); // Tăng thời gian giãn ra một tí (150 -> 200)
 
         if (beatCount > 24) {
-
             clearInterval(beatInterval);
             heartScale = 1;
             explodeParticles();
-
         }
-
-    }, 500);
-
+    }, 600); // Giãn khoảng cách giữa các nhịp đập một chút (500 -> 600)
 }
 
 function explodeParticles() {
@@ -453,14 +429,14 @@ function explodeParticles() {
 
         const angle = Math.random() * Math.PI * 2;
 
-        const speed = Math.random() * 6 + 3;
+        const speed = Math.random() * 10 + 10;
 
         p.vx = Math.cos(angle) * speed;
         p.vy = Math.sin(angle) * speed;
 
         p.alpha = 1;
 
-        p.fade = 0.96 + Math.random() * 0.02;
+        p.fade = 0.88 + Math.random() * 0.02;
 
         p.ease = 0;
 
