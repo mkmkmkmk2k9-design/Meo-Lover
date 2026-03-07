@@ -104,7 +104,7 @@ class Particle {
     if (this.alpha <= 0) return;
 
     const opacity = this.alpha * (this.isText ? 0.9 : 0.5);
-    const lightness = this.isText ? (isMobileDevice() ? 30 : 40) : 35;
+    const lightness = this.isText ? (isMobileDevice() ? 30 : 40) : 30;
 
     ctx.fillStyle = `hsla(345, 99%, ${lightness}%, ${opacity})`;
 
@@ -216,7 +216,7 @@ async function init(text) {
 
     let textNodes = [];
 
-    let step = isMobileDevice() ? 1.8 : 1.2;
+    let step = isMobileDevice() ? 2.2 : 1.2;
 
     for (let y = 0; y < offCanvas.height; y += step * scale) {
 
@@ -279,30 +279,33 @@ async function init(text) {
 }
 
 function animate() {
-
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)'; 
+    // Tăng độ mờ hậu cảnh lên một chút (0.2 -> 0.25) để vệt hạt mượt hơn
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.25)'; 
     ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
-    // ⭐ background sao chỉ khi trái tim xuất hiện
     if (showStars) {
+        starOpacity += 0.02;
+        if (starOpacity > 1) starOpacity = 1;
+        stars.forEach(s => {
+            ctx.fillStyle = `rgba(255,255,255,${s.alpha * starOpacity})`;
+            ctx.fillRect(s.x, s.y, s.size, s.size);
+        });
+    }
 
-    starOpacity += 0.02;
-    if (starOpacity > 1) starOpacity = 1;
-
-    stars.forEach(s => {
-
-        ctx.fillStyle = `rgba(255,255,255,${s.alpha * starOpacity})`;
-        ctx.fillRect(s.x, s.y, s.size, s.size);
-
-    });
-
-   }
-
+    // Lượt 1: Vẽ hạt nền trước (Để nằm ở lớp dưới)
     for (let i = 0; i < particles.length; i++) {
+        if (!particles[i].isText) {
+            particles[i].update();
+            particles[i].draw();
+        }
+    }
 
-        particles[i].update();
-        particles[i].draw();
-
+    // Lượt 2: Vẽ hạt chữ sau (Để nằm đè lên trên hạt nền)
+    for (let i = 0; i < particles.length; i++) {
+        if (particles[i].isText) {
+            particles[i].update();
+            particles[i].draw();
+        }
     }
 
     requestAnimationFrame(animate);
@@ -466,8 +469,3 @@ document.fonts.ready.then(async () => {
     animate();
 
 });
-
-
-
-
-
