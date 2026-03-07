@@ -494,10 +494,21 @@ window.addEventListener('mousedown', startSequence);
 window.addEventListener(
     'touchstart',
     (e) => {
-        e.preventDefault();
+        // 1. Vẫn giữ chặn cuộn trang để hiệu ứng mượt mà
+        if (e.cancelable) e.preventDefault(); 
+
+        // 2. Kích hoạt âm thanh ngay lập tức (Rất quan trọng cho Mobile)
+        if (myMusic) {
+            myMusic.play().then(() => {
+                // Nếu nhạc phát được ngay thì tạm dừng để startSequence xử lý tiếp
+                myMusic.pause(); 
+            }).catch(err => console.log("Chờ startSequence kích hoạt"));
+        }
+
+        // 3. Chạy hiệu ứng của bạn
         startSequence();
     },
-    { passive: false }
+    { passive: false } // Bắt buộc phải có để preventDefault hoạt động
 );
 
 document.fonts.ready.then(async () => {
