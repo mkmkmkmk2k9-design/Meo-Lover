@@ -223,7 +223,7 @@ async function init(text) {
 
     let textNodes = [];
 
-    let step = isMobileDevice() ? 1.1 : 1.2;
+    let step = isMobileDevice() ? 1.2 : 1.2;
 
     for (let y = 0; y < offCanvas.height; y += step) {
 
@@ -448,7 +448,7 @@ function explodeParticles() {
 
         p.fade = 0.88 + Math.random() * 0.02;
 
-        p.ease = 0;
+        p.ease = 0.02;
 
         p.isText = true;
 
