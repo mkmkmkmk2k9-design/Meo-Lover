@@ -3,6 +3,7 @@ const ctx = canvas.getContext('2d', { willReadFrequently: true });
 ctx.imageSmoothingEnabled = true;
 
 let particles = [];
+const BASE_COUNT = isMobileDevice() ? 1500 : 2000;
 let stars = [];
 let currentMsgIndex = -1; 
 let isRunning = false; 
@@ -21,20 +22,26 @@ const messages = [
     { text: "THỰC SỰ YÊU EM RẤT NHIỀU", time: 3550 },
     { text: "DÙ CHO EM CÓ NÓI", time: 4000 },
     { text: "RẰNG TA SẼ KHÔNG THỂ BÊN NHAU", time: 4000 },
-    { text: "THÌ", time: 4500 }, 
+    { text: "THÌ", 
+        time: 7000
+    }, 
     { text: "ANH VẪN LUÔN YÊU EM", time: 4000 },
-    { text: "SẼ LUÔN ", time: 5000 },
+    { text: "SẼ LUÔN ", 
+        time: 8000
+    },
     { text: "GỬI CHO EM NHỮNG LỜI CHÚC TỐT ĐẸP NHẤT", time: 6500 },
-    { text: "HÃY LUÔN MỈM CƯỜI VÀ HẠNH PHÚC NHÉ !!!", time: 6500 },
+    { text: "HÃY LUÔN MỈM CƯỜI VÀ HẠNH PHÚC NHÉ !!!", 
+        time: 7000
+    },
     { text: "CHÚC EM 8/3 VUI VẺ :)))))", 
         time: 15000, 
         onShow: () => {
         setTimeout(() => {
             showStars = true; // hiện background sao
-            explodeHeart(0.15);   // gom thành trái tim
+            explodeHeart(0.5);   // gom thành trái tim
             setTimeout(() => {
                 startHeartBeat(); // tim đập
-            }, 2000); // bắt đầu tim đập
+            }, 3500); // bắt đầu tim đập
         }, 10000);}
     }
 ]; 
@@ -104,7 +111,7 @@ class Particle {
     if (this.alpha <= 0) return;
 
     const opacity = this.alpha * (this.isText ? 1.0 : 0.8);
-    const lightness = this.isText ? (isMobileDevice() ? 30 : 40) : 30;
+    const lightness = this.isText ? (isMobileDevice() ? 30 : 40) : 25;
 
     ctx.fillStyle = `hsla(345, 99%, ${lightness}%, ${opacity})`;
 
@@ -124,7 +131,7 @@ function initChaos() {
 
     particles = [];
 
-    const count = isMobileDevice() ? 1500 : 3000;
+    const count = isMobileDevice() ? 1500 : 2000;
 
     for (let i = 0; i < count; i++) {
 
@@ -259,7 +266,6 @@ async function init(text) {
             p.targetX = textNodes[i].x;
             p.targetY = textNodes[i].y;
             p.isText = true;
-            p.alpha = 1;
 
             p.size = isMobileDevice() ? 1.1 : 1.7;
             p.ease = isMobileDevice() ? 0.8 : 0.67; 
@@ -270,8 +276,7 @@ async function init(text) {
             p.targetY = Math.random() * window.innerHeight;
 
             p.isText = false;
-            p.alpha = 0.1;
-            p.size = 1.0;
+            p.size = 0.8;
             p.ease = 0.05;
 
         }
@@ -282,7 +287,7 @@ async function init(text) {
 
 function animate() {
     // Tăng độ mờ hậu cảnh lên một chút (0.2 -> 0.25) để vệt hạt mượt hơn
-    ctx.fillStyle = 'rgba(0, 0, 0, 1.5)'; 
+    ctx.fillStyle = 'rgba(0, 0, 0, 1)'; 
     ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
     if (showStars) {
@@ -471,3 +476,4 @@ document.fonts.ready.then(async () => {
     animate();
 
 });
+
