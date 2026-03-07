@@ -216,7 +216,7 @@ async function init(text) {
 
     let textNodes = [];
 
-    let step = isMobileDevice() ? 2.2 : 1.2;
+    let step = isMobileDevice() ? 1.3 : 1.2;
 
     for (let y = 0; y < offCanvas.height; y += step * scale) {
 
@@ -469,3 +469,4 @@ document.fonts.ready.then(async () => {
     animate();
 
 });
+
