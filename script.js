@@ -21,7 +21,7 @@ const messages = [
     { text: "THỰC SỰ YÊU EM RẤT NHIỀU", time: 3500 },
     { text: "DÙ CHO EM CÓ NÓI", time: 3500 },
     { text: "RẰNG TA SẼ KHÔNG THỂ BÊN NHAU", time: 4500 },
-    { text: "THÌ", time: 2500 }, 
+    { text: "THÌ", time: 3000 }, 
     { text: "ANH VẪN LUÔN YÊU EM", time: 3500 },
     { text: "SẼ LUÔN ", time: 3500 },
     { text: "GỬI CHO EM NHỮNG LỜI CHÚC TỐT ĐẸP NHẤT", time: 6000 },
@@ -490,3 +490,4 @@ document.fonts.ready.then(async () => {
     animate();
 
 });
+
