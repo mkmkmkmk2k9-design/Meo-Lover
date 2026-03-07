@@ -124,14 +124,14 @@ function initChaos() {
 
     particles = [];
 
-    const count = isMobileDevice() ? 1000 : 3000;
+    const count = isMobileDevice() ? 1500 : 3000;
 
     for (let i = 0; i < count; i++) {
 
         particles.push(
             new Particle(
-                Math.random() * window.innerWidth,
-                Math.random() * window.innerHeight
+                Math.random() * canvas.width,
+                Math.random() * canvas.height
             )
         );
 
@@ -363,8 +363,8 @@ function initStars(){
     for(let i=0;i<120;i++){
 
         stars.push({
-            x: Math.random()*window.innerWidth,
-            y: Math.random()*window.innerHeight,
+            x: Math.random()*canvas.width,
+            y: Math.random()*canvas.height,
             size: Math.random()*2,
             alpha: Math.random()
         });
@@ -377,12 +377,13 @@ let heartScale = 1;
 
 function explodeHeart() {
 
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
+    const centerX = canvas.width / (window.devicePixelRatio || 1) / 2;
+    const centerY = canvas.height / (window.devicePixelRatio || 1) / 2;
 
     const heart = [];
 
-    const scale = 12 * heartScale;
+    const base = Math.min(window.innerWidth, window.innerHeight);
+    const scale = (base / 50) * heartScale;
 
     for (let t = 0; t < Math.PI * 2; t += 0.04) {
 
