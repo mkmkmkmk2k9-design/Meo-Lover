@@ -103,7 +103,7 @@ class Particle {
 
     if (this.alpha <= 0) return;
 
-    const opacity = this.alpha * (this.isText ? 0.9 : 0.5);
+    const opacity = this.alpha * (this.isText ? 1.0 : 0.8);
     const lightness = this.isText ? (isMobileDevice() ? 30 : 40) : 30;
 
     ctx.fillStyle = `hsla(345, 99%, ${lightness}%, ${opacity})`;
@@ -141,7 +141,7 @@ function initChaos() {
 async function init(text) {
 
     const scale = window.devicePixelRatio || 1;
-    const hiResScale = isMobileDevice() ? 2 : 2;
+    const hiResScale = isMobileDevice() ? 1.5 : 2;
 
     const offCanvas = document.createElement('canvas');
     const offCtx = offCanvas.getContext('2d');
@@ -218,9 +218,9 @@ async function init(text) {
 
     let step = isMobileDevice() ? 1.1 : 1.2;
 
-    for (let y = 0; y < offCanvas.height; y += step * scale) {
+    for (let y = 0; y < offCanvas.height; y += step) {
 
-        for (let x = 0; x < offCanvas.width; x += step * scale) {
+        for (let x = 0; x < offCanvas.width; x += step) {
 
             const index = (Math.floor(y) * offCanvas.width + Math.floor(x)) * 4 + 3;
 
@@ -262,7 +262,7 @@ async function init(text) {
             p.alpha = 1;
 
             p.size = isMobileDevice() ? 1.1 : 1.7;
-            p.ease = isMobileDevice() ? 0.5 : 0.5; 
+            p.ease = isMobileDevice() ? 0.67 : 0.67; 
 
         } else {
 
@@ -282,7 +282,7 @@ async function init(text) {
 
 function animate() {
     // Tăng độ mờ hậu cảnh lên một chút (0.2 -> 0.25) để vệt hạt mượt hơn
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.25)'; 
+    ctx.fillStyle = 'rgba(0, 0, 0, 1.5)'; 
     ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
     if (showStars) {
