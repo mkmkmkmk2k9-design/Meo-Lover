@@ -262,7 +262,7 @@ async function init(text) {
             p.alpha = 1;
 
             p.size = isMobileDevice() ? 1.1 : 1.7;
-            p.ease = isMobileDevice() ? 0.67 : 0.67; 
+            p.ease = isMobileDevice() ? 0.8 : 0.67; 
 
         } else {
 
