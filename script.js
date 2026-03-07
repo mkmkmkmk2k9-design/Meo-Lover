@@ -17,15 +17,15 @@ function isMobileDevice() {
 }
 
 const messages = [
-    { text: "ANH LỠ YÊU EM MẤT RỒI", time: 3500 }, 
-    { text: "THỰC SỰ YÊU EM RẤT NHIỀU", time: 3500 },
-    { text: "DÙ CHO EM CÓ NÓI", time: 3500 },
-    { text: "RẰNG TA SẼ KHÔNG THỂ BÊN NHAU", time: 4500 },
-    { text: "THÌ", time: 3000 }, 
-    { text: "ANH VẪN LUÔN YÊU EM", time: 3500 },
-    { text: "SẼ LUÔN ", time: 3500 },
-    { text: "GỬI CHO EM NHỮNG LỜI CHÚC TỐT ĐẸP NHẤT", time: 6000 },
-    { text: "HÃY LUÔN MỈM CƯỜI VÀ HẠNH PHÚC NHÉ !!!", time: 6000 },
+    { text: "ANH LỠ YÊU EM MẤT RỒI", time: 4000 }, 
+    { text: "THỰC SỰ YÊU EM RẤT NHIỀU", time: 4000 },
+    { text: "DÙ CHO EM CÓ NÓI", time: 4000 },
+    { text: "RẰNG TA SẼ KHÔNG THỂ BÊN NHAU", time: 4000 },
+    { text: "THÌ", time: 4000 }, 
+    { text: "ANH VẪN LUÔN YÊU EM", time: 4000 },
+    { text: "SẼ LUÔN ", time: 4000 },
+    { text: "GỬI CHO EM NHỮNG LỜI CHÚC TỐT ĐẸP NHẤT", time: 6500 },
+    { text: "HÃY LUÔN MỈM CƯỜI VÀ HẠNH PHÚC NHÉ !!!", time: 6500 },
     { text: "CHÚC EM 8/3 VUI VẺ :)))))", 
         time: 15000, 
         onShow: () => {
@@ -72,7 +72,7 @@ class Particle {
         this.targetY = y;
         this.size = 1;
         this.isText = false;
-        this.ease = 0.1;
+        this.ease = 0.2;
         this.spin = 0;
         this.opacity = 1;
         this.alpha = 1;
@@ -216,7 +216,7 @@ async function init(text) {
 
     let textNodes = [];
 
-    let step = isMobileDevice() ? 0.95 : 1.8;
+    let step = isMobileDevice() ? 0.7 : 1.2;
 
     for (let y = 0; y < offCanvas.height; y += step * scale) {
 
@@ -224,7 +224,7 @@ async function init(text) {
 
             const index = (Math.floor(y) * offCanvas.width + Math.floor(x)) * 4 + 3;
 
-            if (data[index] > 250) {
+            if (data[index] > 128) {
 
                 textNodes.push({
                     x: x /hiResScale,
@@ -261,7 +261,7 @@ async function init(text) {
             p.isText = true;
 
             p.size = isMobileDevice() ? 1.1 : 1.7;
-            p.ease = isMobileDevice() ? 0.4 : 0.2; 
+            p.ease = isMobileDevice() ? 0.6 : 0.4; 
 
         } else {
 
@@ -490,4 +490,3 @@ document.fonts.ready.then(async () => {
     animate();
 
 });
-
