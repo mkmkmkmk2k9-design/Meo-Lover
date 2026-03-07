@@ -259,6 +259,7 @@ async function init(text) {
             p.targetX = textNodes[i].x;
             p.targetY = textNodes[i].y;
             p.isText = true;
+            p.alpha = 1;
 
             p.size = isMobileDevice() ? 1.1 : 1.7;
             p.ease = isMobileDevice() ? 0.5 : 0.3; 
@@ -269,6 +270,7 @@ async function init(text) {
             p.targetY = Math.random() * window.innerHeight;
 
             p.isText = false;
+            p.alpha = 0.1;
             p.size = 1.0;
             p.ease = 0.05;
 
@@ -469,4 +471,3 @@ document.fonts.ready.then(async () => {
     animate();
 
 });
-
