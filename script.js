@@ -2,8 +2,14 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d', { willReadFrequently: true });
 ctx.imageSmoothingEnabled = true;
 
-const myMusic = new Audio('mmusic.mp3');
-myMusic.preload = 'auto';
+// Thay thế dòng 'new Audio' cũ bằng Howl
+const myMusic = new Howl({
+    src: ['mmusic.mp3'],
+    html5: true, // Quan trọng để phát file dài và tiết kiệm bộ nhớ
+    preload: true,
+    volume: 0.7
+});
+
 const START_TIME = 20;
 const END_TIME = 145;
 
@@ -327,33 +333,23 @@ async function startSequence() {
 
     if (isRunning) return;
 
-    myMusic.currentTime = START_TIME;
-    myMusic.volume = 0.7;
-    myMusic.play().catch(e => console.log("Lỗi phát nhạc"));
-    let isFading = false;
+    myMusic.seek(START_TIME); // Nhảy đến giây thứ 20
+    myMusic.play();
     
-    myMusic.ontimeupdate = function() {
-        // Khi còn 5 giây nữa là hết (tăng lên 5s cho dễ cảm nhận)
-        if (myMusic.currentTime >= END_TIME - 5 && !isFading) {
-            isFading = true; // Đánh dấu đang bắt đầu giảm âm lượng
-            
-            let fadeOutInterval = setInterval(() => {
-                if (myMusic.volume > 0.05) {
-                    myMusic.volume -= 0.05; // Giảm dần mỗi 200ms
-                } else {
-                    myMusic.volume = 0;
-                    myMusic.pause();
-                    clearInterval(fadeOutInterval);
-                }
-            }, 200); // 0.2 giây giảm 1 lần
-        }
+   myMusic.once('play', function() {
+        const durationInMs = (END_TIME - START_TIME) * 1000;
+        const fadeStartMs = (END_TIME - START_TIME - 5) * 1000;
 
-        // Chốt chặn cuối cùng nếu chẳng may vòng lặp trên chưa kịp chạy xong
-        if (myMusic.currentTime >= END_TIME) {
-            myMusic.pause();
-            myMusic.ontimeupdate = null;
-        }
-    };
+        // Bắt đầu giảm âm lượng khi còn 5 giây cuối
+        setTimeout(() => {
+            myMusic.fade(0.7, 0, 5000); 
+        }, fadeStartMs);
+
+        // Dừng hẳn khi hết thời gian
+        setTimeout(() => {
+            myMusic.stop();
+        }, durationInMs);
+    });
 
     await document.fonts.load(`900 20px "Montserrat"`);
 
@@ -489,27 +485,26 @@ function explodeParticles() {
 
 }
 
-window.addEventListener('mousedown', startSequence);
+// Hàm xử lý tương tác người dùng (Click hoặc Chạm)
+function handleInteraction(e) {
+    // Ngăn chặn hành vi mặc định (cuộn trang, zoom) để hiệu ứng mượt hơn
+    if (e.cancelable) e.preventDefault();
+    
+    // Gọi hàm bắt đầu chuỗi hiệu ứng và phát nhạc
+    startSequence();
 
-window.addEventListener(
-    'touchstart',
-    (e) => {
-        // 1. Vẫn giữ chặn cuộn trang để hiệu ứng mượt mà
-        if (e.cancelable) e.preventDefault(); 
+    // Quan trọng: Xóa bỏ sự kiện ngay sau khi kích hoạt lần đầu 
+    // để tránh việc người dùng chạm lần nữa làm reset lại từ đầu.
+    window.removeEventListener('mousedown', handleInteraction);
+    window.removeEventListener('touchstart', handleInteraction);
+}
 
-        // 2. Kích hoạt âm thanh ngay lập tức (Rất quan trọng cho Mobile)
-        if (myMusic) {
-            myMusic.play().then(() => {
-                // Nếu nhạc phát được ngay thì tạm dừng để startSequence xử lý tiếp
-                myMusic.pause(); 
-            }).catch(err => console.log("Chờ startSequence kích hoạt"));
-        }
+// Lắng nghe sự kiện chuột (cho máy tính)
+window.addEventListener('mousedown', handleInteraction);
 
-        // 3. Chạy hiệu ứng của bạn
-        startSequence();
-    },
-    { passive: false } // Bắt buộc phải có để preventDefault hoạt động
-);
+// Lắng nghe sự kiện chạm (cho điện thoại) 
+// { passive: false } là bắt buộc để preventDefault() hoạt động ổn định trên Mobile
+window.addEventListener('touchstart', handleInteraction, { passive: false });
 
 document.fonts.ready.then(async () => {
 
